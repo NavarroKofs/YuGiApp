@@ -1,4 +1,3 @@
-import config from '../../env.js'
 import axios from 'axios'
 
 function configAxios (ambit = 'public', module = 'cards') {
@@ -10,7 +9,7 @@ function configAxios (ambit = 'public', module = 'cards') {
     headers.token = localStorage.token ? localStorage.token : ''
   }
 
-  const apiURL = module === 'decklist' ? config.apiKonami : config.api
+  const apiURL = module === 'decklist' ? '/apiKonami' : '/api'
 
   const axiosInstance = axios.create({
     baseURL: apiURL,

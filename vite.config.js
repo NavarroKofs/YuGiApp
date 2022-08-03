@@ -10,6 +10,20 @@ export default defineConfig({
     }
   })],
   server: {
-    host: true
+    host: true,
+    proxy: {
+      '/apiKonami': {
+        target: 'https://img.yugioh-card.com/en/downloads/forms/KDE_DeckList.pdf',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace('/apiKonami', '')
+      },
+      '/api': {
+        target: 'https://db.ygoprodeck.com/api/v7/cardinfo.php',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace('/api', '')
+      }
+    }
   }
 })

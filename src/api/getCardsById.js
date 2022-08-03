@@ -16,7 +16,8 @@ function getCardsById (ids = []) {
   return axios.get('', {
     params: {
       id: idsList
-    }
+    },
+    crossDomain: true
   })
 }
 

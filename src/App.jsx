@@ -28,6 +28,7 @@ const App = () => {
     date: '',
     event: ''
   })
+  const [formPdfBytes, setFormPdfBytes] = useState(null)
 
   const formik = useFormik({
     initialValues: {
@@ -38,12 +39,15 @@ const App = () => {
       event: ''
     },
     onSubmit: async () => {
-      await formSchema.validate(formData).then(() => {
-        getDecklistSheet()
-      }).catch((error) => {
-        alert(JSON.parse(JSON.stringify(error)).message)
-        return false
-      })
+      await formSchema
+        .validate(formData)
+        .then(() => {
+          getDecklistSheet()
+        })
+        .catch((error) => {
+          alert(JSON.parse(JSON.stringify(error)).message)
+          return false
+        })
     }
   })
 
@@ -75,68 +79,88 @@ const App = () => {
       return
     }
     try {
-      const mainMonsters = cards.main.filter(card => card.type.includes('Monster'))
-      const mainSpells = cards.main.filter(card => card.type.includes('Spell'))
-      const mainTraps = cards.main.filter(card => card.type.includes('Trap'))
+      const mainMonsters = cards.main.filter((card) =>
+        card.type.includes('Monster')
+      )
+      const mainSpells = cards.main.filter((card) =>
+        card.type.includes('Spell')
+      )
+      const mainTraps = cards.main.filter((card) => card.type.includes('Trap'))
 
       if (
         mainMonsters.length > 18 ||
         mainSpells.length > 18 ||
         mainTraps.length > 18
       ) {
-        alert('The quantity of monsters, spells or traps is more than 18. Please, fill your decksheet manually.')
+        alert(
+          'The quantity of monsters, spells or traps is more than 18. Please, fill your decksheet manually.'
+        )
         return
       }
 
-      const formPdfBytes = await getDecklistForm()
-      const pdfDoc = await PDFDocument.load(formPdfBytes.data)
+      let pdfDecksheet
+      if (!formPdfBytes) {
+        pdfDecksheet = await (await getDecklistForm()).data
+        setFormPdfBytes(pdfDecksheet)
+      } else {
+        pdfDecksheet = formPdfBytes
+      }
+      const pdfDoc = await PDFDocument.load(pdfDecksheet)
       const decklistForm = pdfDoc.getForm()
-      decklistForm.getTextField('Full Name').setText(`${formData.name} ${formData.lastname}`)
-      decklistForm.getTextField('Last Initial').setText(formData.lastname.charAt(0).toUpperCase())
+      decklistForm
+        .getTextField('Full Name')
+        .setText(`${formData.name} ${formData.lastname}`)
+      decklistForm
+        .getTextField('Last Initial')
+        .setText(formData.lastname.charAt(0).toUpperCase())
       decklistForm.getTextField('Konami Player ID').setText(formData.playerId)
       const date = new Date(formData.date)
-      decklistForm.getTextField('Day').setText(date.getDate().toString().padStart(2, '0'))
-      decklistForm.getTextField('Month').setText((date.getMonth() + 1).toString().padStart(2, '0'))
+      decklistForm
+        .getTextField('Day')
+        .setText(date.getDate().toString().padStart(2, '0'))
+      decklistForm
+        .getTextField('Month')
+        .setText((date.getMonth() + 1).toString().padStart(2, '0'))
       decklistForm.getTextField('Year').setText(date.getFullYear().toString())
       decklistForm.getTextField('Event Name').setText(formData.event)
 
       mainMonsters.map((card, index) => {
-        decklistForm.getTextField(`Mon ${index + 1} ${index === 0 ? 'number' : 'Number'}`).setText(card.quantity.toString())
         decklistForm
-          .getTextField(`Mon ${index + 1} Name`)
-          .setText(card.name)
+          .getTextField(`Mon ${index + 1} ${index === 0 ? 'number' : 'Number'}`)
+          .setText(card.quantity.toString())
+        decklistForm.getTextField(`Mon ${index + 1} Name`).setText(card.name)
         index++
       })
 
       mainSpells.map((card, index) => {
-        decklistForm.getTextField(`Spell ${index + 1} Number`).setText(card.quantity.toString())
         decklistForm
-          .getTextField(`Spell ${index + 1} Name`)
-          .setText(card.name)
+          .getTextField(`Spell ${index + 1} Number`)
+          .setText(card.quantity.toString())
+        decklistForm.getTextField(`Spell ${index + 1} Name`).setText(card.name)
         index++
       })
 
       mainTraps.map((card, index) => {
-        decklistForm.getTextField(`Trap ${index + 1} Number`).setText(card.quantity.toString())
         decklistForm
-          .getTextField(`Trap ${index + 1} Name`)
-          .setText(card.name)
+          .getTextField(`Trap ${index + 1} Number`)
+          .setText(card.quantity.toString())
+        decklistForm.getTextField(`Trap ${index + 1} Name`).setText(card.name)
         index++
       })
 
       cards.extra.map((card, index) => {
-        decklistForm.getTextField(`Extra ${index + 1} Number`).setText(card.quantity.toString())
         decklistForm
-          .getTextField(`Extra ${index + 1} Name`)
-          .setText(card.name)
+          .getTextField(`Extra ${index + 1} Number`)
+          .setText(card.quantity.toString())
+        decklistForm.getTextField(`Extra ${index + 1} Name`).setText(card.name)
         index++
       })
 
       cards.side.map((card, index) => {
-        decklistForm.getTextField(`Side ${index + 1} Number`).setText(card.quantity.toString())
         decklistForm
-          .getTextField(`Side ${index + 1} Name`)
-          .setText(card.name)
+          .getTextField(`Side ${index + 1} Number`)
+          .setText(card.quantity.toString())
+        decklistForm.getTextField(`Side ${index + 1} Name`).setText(card.name)
         index++
       })
 
@@ -144,29 +168,32 @@ const App = () => {
         .getTextField('Main Deck Total')
         .setText(getQuantity(cards.main).toString())
 
-      decklistForm.getTextField('Total Spell Cards').setText(
-        getQuantity(mainSpells).toString()
-      )
-      decklistForm.getTextField('Total Trap Cards').setText(
-        getQuantity(mainTraps).toString()
-      )
-      decklistForm.getTextField('Total Mon Cards').setText(
-        getQuantity(mainMonsters).toString()
-      )
-      decklistForm.getTextField('Total Side Number').setText(
-        getQuantity(cards.side).toString()
-      )
-      decklistForm.getTextField('Total Extra Deck').setText(
-        getQuantity(cards.extra).toString()
-      )
+      decklistForm
+        .getTextField('Total Spell Cards')
+        .setText(getQuantity(mainSpells).toString())
+      decklistForm
+        .getTextField('Total Trap Cards')
+        .setText(getQuantity(mainTraps).toString())
+      decklistForm
+        .getTextField('Total Mon Cards')
+        .setText(getQuantity(mainMonsters).toString())
+      decklistForm
+        .getTextField('Total Side Number')
+        .setText(getQuantity(cards.side).toString())
+      decklistForm
+        .getTextField('Total Extra Deck')
+        .setText(getQuantity(cards.extra).toString())
       const pdfBytes = await pdfDoc.save()
       download(
         pdfBytes,
-        `${formData.name.replace(' ', '-')}-${formData.lastname.replace(' ', '-')}-Decksheet.pdf`,
+        `${formData.name.replace(' ', '-')}-${formData.lastname.replace(
+          ' ',
+          '-'
+        )}-Decksheet.pdf`,
         'application/pdf'
       )
     } catch (e) {
-      console.log(e)
+      onFileErrorHandler(e)
     }
   }
 
@@ -442,10 +469,7 @@ const App = () => {
 
   const onUploadDecklistHandler = (e) => {
     const file = e.target.files[0]
-    if (file.name.substring(
-      file.name.length - 3,
-      file.name.length) === 'ydk'
-    ) {
+    if (file.name.substring(file.name.length - 3, file.name.length) === 'ydk') {
       let reader
       try {
         reader = new FileReader()
@@ -468,11 +492,11 @@ const App = () => {
       for (let index = 0; index < text.length; index++) {
         text[index] = text[index].replace('\r', '')
       }
-      text = text.filter(text => text !== '')
+      text = text.filter((text) => text !== '')
 
-      const indexMain = text.findIndex(t => t === '#main')
-      const indexExtra = text.findIndex(t => t === '#extra')
-      const indexSide = text.findIndex(t => t === '!side')
+      const indexMain = text.findIndex((t) => t === '#main')
+      const indexExtra = text.findIndex((t) => t === '#extra')
+      const indexSide = text.findIndex((t) => t === '!side')
       const mainCardsIds = []
       const sideCardsIds = []
       const extraCardsIds = []
@@ -492,26 +516,26 @@ const App = () => {
         }
       }
 
-      const info = text.filter(id => startsWithNumber(id))
+      const info = text.filter((id) => startsWithNumber(id))
       const cardsInformation = (await getCardsInformation(info)).data.data
       const mainCards = []
       const sideCards = []
       const extraCards = []
       for (let index = 0; index < cardsInformation.length; index++) {
-        let quantity = mainCardsIds.filter(card =>
-          card === cardsInformation[index].id.toString()
+        let quantity = mainCardsIds.filter(
+          (card) => card === cardsInformation[index].id.toString()
         ).length
         if (quantity > 0) {
           mainCards.push({ ...cardsInformation[index], quantity })
         }
-        quantity = extraCardsIds.filter(card =>
-          card === cardsInformation[index].id.toString()
+        quantity = extraCardsIds.filter(
+          (card) => card === cardsInformation[index].id.toString()
         ).length
         if (quantity > 0) {
           extraCards.push({ ...cardsInformation[index], quantity })
         }
-        quantity = sideCardsIds.filter(card =>
-          card === cardsInformation[index].id.toString()
+        quantity = sideCardsIds.filter(
+          (card) => card === cardsInformation[index].id.toString()
         ).length
         if (quantity > 0) {
           sideCards.push({ ...cardsInformation[index], quantity })
