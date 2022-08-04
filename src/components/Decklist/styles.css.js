@@ -42,7 +42,7 @@ export const DeckListStyles = css`
       backdrop-filter: blur(4px);
 
       @media (orientation: portrait) {
-        width: 15%;
+        width: 20%;
       }
 
       :hover {
