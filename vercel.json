@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/apiKonami*", "destination": "https://img.yugioh-card.com/en/downloads/forms/KDE_DeckList.pdf" },
+    { "source": "/api*", "destination": "https://db.ygoprodeck.com/api/v7/cardinfo.php" }
+  ]
+}
