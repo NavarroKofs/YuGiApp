@@ -74,10 +74,10 @@ const App = () => {
   }, [sidebarCardSubject])
 
   const getDecklistSheet = async () => {
-    if (getQuantity(cards.main) < 40) {
-      alert('Minimum main deck size is 40 cards')
-      return
-    }
+    // if (getQuantity(cards.main) < 40) {
+    //   alert('Minimum main deck size is 40 cards')
+    //   return
+    // }
     try {
       const mainMonsters = cards.main.filter((card) =>
         card.type.includes('Monster')
