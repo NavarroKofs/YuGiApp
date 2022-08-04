@@ -1,3 +1,0 @@
-# Redirects from what the browser requests to what we serve
-/apiKonami         https://img.yugioh-card.com/en/downloads/forms/KDE_DeckList.pdf
-/api            https://db.ygoprodeck.com/api/v7/cardinfo.php
