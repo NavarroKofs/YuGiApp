@@ -61,6 +61,10 @@ export const CardItemStyles = css`
   border: 1px solid #000;
   color: #fefefe;
 
+  @media (orientation: portrait) {
+    grid-template-columns: 3fr 5fr;
+  }
+
   .card-picture {
     margin-right: .2vw;
     height: 10vh;

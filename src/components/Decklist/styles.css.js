@@ -41,6 +41,10 @@ export const DeckListStyles = css`
       cursor: pointer;
       backdrop-filter: blur(4px);
 
+      @media (orientation: portrait) {
+        width: 15%;
+      }
+
       :hover {
         box-shadow: 0px 0px 19px rgb(0,172,234);
       }
@@ -65,20 +69,37 @@ export const DeckListStyles = css`
     .deck {
       grid-template-columns: repeat(10, 1fr);
       grid-template-rows: repeat(4, 24%);
+
+      @media (orientation: portrait) {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 9.8%);
+      }
     }
 
     .miniDeck {
       grid-template-rows: repeat(6, 15%);
+      @media (orientation: portrait) {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: repeat(10, 9.8%);
+      }
     }
 
     .extra {
       grid-template-columns: repeat(15, 1fr);
       grid-template-rows: 90%;
+      @media (orientation: portrait) {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(2, 48%);
+      }
     }
 
     .miniExtra {
       grid-template-columns: repeat(10, 1fr);
       grid-template-rows: 90%;
+      @media (orientation: portrait) {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(2, 48%);
+      }
     }
   }
 `
