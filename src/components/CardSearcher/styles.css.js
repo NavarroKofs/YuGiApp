@@ -9,6 +9,9 @@ export const CardSearcherStyle = css`
   background-color: rgba(0,0,0,.5);
   box-shadow: 0px 0px 19px #009fda;
   backdrop-filter: blur(4px);
+  @media (orientation: portrait) {
+    width: 30vw;
+  }
 `
 
 export const SearchBarStyle = css`
@@ -64,7 +67,7 @@ export const CardItemStyles = css`
 
   @media (orientation: portrait) {
     height: 5vh;
-    grid-template-columns: 4fr 5fr;
+    grid-template-columns: 3fr 5fr;
   }
 
   .card-picture {
@@ -89,6 +92,10 @@ export const CardItemStyles = css`
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 1vh 0;
+
+    @media (orientation: portrait) {
+      font-size: 1.5vw;
+    }
 
     p {
       margin: 2px 0;

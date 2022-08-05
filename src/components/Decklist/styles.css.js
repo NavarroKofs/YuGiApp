@@ -7,6 +7,10 @@ export const DeckListStyles = css`
   overflow-y: auto;
   border-top: 1px solid #000;
   overflow: hidden;
+
+  @media (orientation: portrait) {
+    width: 65vw;
+  }
   
   .card-holder-title {
     color: #fefefe;
@@ -64,6 +68,9 @@ export const DeckListStyles = css`
       gap: .5vw;
       align-items: start;
       flex-wrap: wrap;
+      @media (orientation: portrait) {
+        gap: 1vw;
+      }
     }
 
     .deck {
@@ -71,8 +78,8 @@ export const DeckListStyles = css`
       grid-template-rows: repeat(4, 24%);
 
       @media (orientation: portrait) {
-        grid-template-columns: repeat(6, 1fr);
-        grid-template-rows: repeat(10, 9.8%);
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(8, 12%);
       }
     }
 

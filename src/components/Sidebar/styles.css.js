@@ -9,6 +9,9 @@ export const SidebarStyle = css`
   background-color: rgba(0,0,0,.5);
   backdrop-filter: blur(4px);
   color: #fefefe;
+  @media (orientation: portrait) {
+    display: none;
+  }
   ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
