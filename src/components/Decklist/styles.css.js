@@ -166,7 +166,7 @@ export const DeckFormStyles = css`
 
     @media (max-height: 700px) {
       height: 50%;
-      font-size: 0.5rem;
+      font-size: 0.4rem;
     }
   }
 

@@ -31,6 +31,7 @@ export const SearchBarStyle = css`
     padding-left: 1.6vw;
 
     @media (max-height: 700px) {
+      font-size: 0.5rem;
       width: 100%;
       margin: 0;
       background-image: none;
@@ -62,12 +63,16 @@ export const CardItemStyles = css`
   color: #fefefe;
 
   @media (orientation: portrait) {
+    height: 5vh;
     grid-template-columns: 4fr 5fr;
   }
 
   .card-picture {
     margin-right: .2vw;
     height: 10vh;
+    @media (orientation: portrait) {
+      height: 5vh;
+    }
     img {
       height: 100%;
       width: 100%;
