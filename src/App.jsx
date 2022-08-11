@@ -479,6 +479,8 @@ const App = () => {
       reader.readAsText(file, 'UTF-8')
       reader.onload = onFileLoaded
       reader.onerror = onFileErrorHandler
+    } else {
+      console.log('This functionality only works on YDK files')
     }
   }
 
