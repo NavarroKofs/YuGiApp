@@ -480,7 +480,7 @@ const App = () => {
       reader.onload = onFileLoaded
       reader.onerror = onFileErrorHandler
     } else {
-      console.log('This functionality only works on YDK files')
+      alert('This functionality only works on YDK files')
     }
   }
 
