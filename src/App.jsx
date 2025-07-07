@@ -12,6 +12,38 @@ import { debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
 import { useDrop } from "react-dnd";
 import { useFormik } from "formik";
 import { formSchema } from "./components/Decklist/FormValidation";
+import { decklistFormFields, COUNT, FILE_SUFFIX } from "./constants/decklist";
+import { cardType, deckType } from "./constants/card";
+import { FILE_TYPE } from "./constants/file";
+import {
+  isCardValidForDeck,
+  getCardMaxQuantity,
+  getDeckMaxSize,
+  getNumberOfCopies,
+  addOrUpdateCardInDeck,
+} from "./utils/validation";
+
+const {
+  FIRST_NAME: FIRST_NAME_KEY,
+  LASTNAME: LASTNAME_KEY,
+  LASTNAME_INITIAL: LASTNAME_INITIAL_KEY,
+  KONAMI_ID: KONAMI_ID_KEY,
+  DATE_DAY: DATE_DAY_KEY,
+  DATE_MONTH: DATE_MONTH_KEY,
+  DATE_YEAR: DATE_YEAR_KEY,
+  EVENT_NAME: EVENT_NAME_KEY,
+  MAIN_DECK_TOTAL: MAIN_DECK_TOTAL_KEY,
+  SPELL_CARDS_TOTAL: SPELL_CARDS_TOTAL_KEY,
+  TRAP_CARDS_TOTAL: TRAP_CARDS_TOTAL_KEY,
+  MONSTER_CARDS_TOTAL: MONSTER_CARDS_TOTAL_KEY,
+  MONSTER_CARD,
+  SPELL_CARD,
+  TRAP_CARD,
+  EXTRA_DECK,
+  SIDE_DECK,
+  EXTRA_DECK_TOTAL: EXTRA_DECK_TOTAL_KEY,
+  SIDE_DECK_TOTAL: SIDE_DECK_TOTAL_KEY,
+} = decklistFormFields;
 
 const App = () => {
   const [sidebarCard, setSidebarCard] = useState({});
@@ -78,120 +110,78 @@ const App = () => {
       alert("Minimum main deck size is 40 cards");
       return;
     }
-    try {
-      const mainMonsters = cards.main.filter((card) =>
-        card.type.includes("Monster")
-      );
-      const mainSpells = cards.main.filter((card) =>
-        card.type.includes("Spell")
-      );
-      const mainTraps = cards.main.filter((card) => card.type.includes("Trap"));
 
-      if (
-        mainMonsters.length > 18 ||
-        mainSpells.length > 18 ||
-        mainTraps.length > 18
-      ) {
+    try {
+      const filterByType = (type) =>
+        cards.main.filter((card) => card.type.includes(type));
+      const mainMonsters = filterByType(cardType.MONSTER);
+      const mainSpells = filterByType(cardType.SPELL);
+      const mainTraps = filterByType(cardType.TRAP);
+
+      const exceedsLimit = [mainMonsters, mainSpells, mainTraps].some(
+        (group) => group.length > 18
+      );
+      if (exceedsLimit) {
         alert(
           "The quantity of monsters, spells or traps is more than 18. Please, fill your decksheet manually."
         );
         return;
       }
 
-      let pdfDecksheet;
+      let pdfDecksheet = formPdfBytes;
       if (!formPdfBytes) {
-        pdfDecksheet = await (await getDecklistForm()).data;
-        setFormPdfBytes(pdfDecksheet);
-      } else {
-        pdfDecksheet = formPdfBytes;
+        const { data } = await getDecklistForm();
+        pdfDecksheet = data;
+        setFormPdfBytes(data);
       }
+
       const pdfDoc = await PDFDocument.load(pdfDecksheet);
       const decklistForm = pdfDoc.getForm();
-      decklistForm
-        .getTextField("Full Name")
-        .setText(`${formData.name} ${formData.lastname}`);
-      decklistForm
-        .getTextField("Last Initial")
-        .setText(formData.lastname.charAt(0).toUpperCase());
-      decklistForm.getTextField("Konami Player ID").setText(formData.playerId);
+      const setText = (field, value) =>
+        decklistForm.getTextField(field).setText(value);
+
+      setText(FIRST_NAME_KEY, formData.name);
+      setText(LASTNAME_KEY, formData.lastname);
+      setText(LASTNAME_INITIAL_KEY, formData.lastname.charAt(0).toUpperCase());
+      setText(KONAMI_ID_KEY, formData.playerId);
+
       const date = new Date(formData.date);
-      decklistForm
-        .getTextField("Day")
-        .setText(date.getDate().toString().padStart(2, "0"));
-      decklistForm
-        .getTextField("Month")
-        .setText((date.getMonth() + 1).toString().padStart(2, "0"));
-      decklistForm.getTextField("Year").setText(date.getFullYear().toString());
-      decklistForm.getTextField("Event Name").setText(formData.event);
-
-      mainMonsters.map((card, index) => {
-        decklistForm
-          .getTextField(`Mon ${index + 1} ${index === 0 ? "number" : "Number"}`)
-          .setText(card.quantity.toString());
-        decklistForm.getTextField(`Mon ${index + 1} Name`).setText(card.name);
-        index++;
-      });
-
-      mainSpells.map((card, index) => {
-        decklistForm
-          .getTextField(`Spell ${index + 1} Number`)
-          .setText(card.quantity.toString());
-        decklistForm.getTextField(`Spell ${index + 1} Name`).setText(card.name);
-        index++;
-      });
-
-      mainTraps.map((card, index) => {
-        decklistForm
-          .getTextField(`Trap ${index + 1} Number`)
-          .setText(card.quantity.toString());
-        decklistForm.getTextField(`Trap ${index + 1} Name`).setText(card.name);
-        index++;
-      });
-
-      cards.extra.map((card, index) => {
-        decklistForm
-          .getTextField(`Extra ${index + 1} Number`)
-          .setText(card.quantity.toString());
-        decklistForm.getTextField(`Extra ${index + 1} Name`).setText(card.name);
-        index++;
-      });
-
-      cards.side.map((card, index) => {
-        decklistForm
-          .getTextField(`Side ${index + 1} Number`)
-          .setText(card.quantity.toString());
-        decklistForm.getTextField(`Side ${index + 1} Name`).setText(card.name);
-        index++;
-      });
-
-      decklistForm
-        .getTextField("Main Deck Total")
-        .setText(getQuantity(cards.main).toString());
-
-      decklistForm
-        .getTextField("Total Spell Cards")
-        .setText(getQuantity(mainSpells).toString());
-      decklistForm
-        .getTextField("Total Trap Cards")
-        .setText(getQuantity(mainTraps).toString());
-      decklistForm
-        .getTextField("Total Mon Cards")
-        .setText(getQuantity(mainMonsters).toString());
-      decklistForm
-        .getTextField("Total Side Number")
-        .setText(getQuantity(cards.side).toString());
-      decklistForm
-        .getTextField("Total Extra Deck")
-        .setText(getQuantity(cards.extra).toString());
-      const pdfBytes = await pdfDoc.save();
-      download(
-        pdfBytes,
-        `${formData.name.replace(" ", "-")}-${formData.lastname.replace(
-          " ",
-          "-"
-        )}-Decksheet.pdf`,
-        "application/pdf"
+      setText(DATE_DAY_KEY, date.getDate().toString().padStart(2, "0"));
+      setText(
+        DATE_MONTH_KEY,
+        (date.getMonth() + 1).toString().padStart(2, "0")
       );
+      setText(DATE_YEAR_KEY, date.getFullYear().toString());
+      setText(EVENT_NAME_KEY, formData.event);
+
+      const fillCardFields = (cards, countPrefix, namePrefix = null) => {
+        cards.forEach((card, index) => {
+          const i = index + 1;
+          setText(`${countPrefix} ${i} ${COUNT}`, card.quantity.toString());
+          setText(`${namePrefix || countPrefix} ${i}`, card.name);
+        });
+      };
+
+      fillCardFields(mainMonsters, MONSTER_CARD, cardType.MONSTER);
+      fillCardFields(mainSpells, SPELL_CARD, cardType.SPELL);
+      fillCardFields(mainTraps, TRAP_CARD, cardType.TRAP);
+      fillCardFields(cards.extra, EXTRA_DECK);
+      fillCardFields(cards.side, SIDE_DECK);
+
+      setText(MAIN_DECK_TOTAL_KEY, getQuantity(cards.main).toString());
+      setText(SPELL_CARDS_TOTAL_KEY, getQuantity(mainSpells).toString());
+      setText(TRAP_CARDS_TOTAL_KEY, getQuantity(mainTraps).toString());
+      setText(MONSTER_CARDS_TOTAL_KEY, getQuantity(mainMonsters).toString());
+      setText(SIDE_DECK_TOTAL_KEY, getQuantity(cards.side).toString());
+      setText(EXTRA_DECK_TOTAL_KEY, getQuantity(cards.extra).toString());
+
+      const pdfBytes = await pdfDoc.save();
+      const fileName = `${formData.name.replace(
+        / /g,
+        "-"
+      )}-${formData.lastname.replace(/ /g, "-")}-${FILE_SUFFIX}`;
+
+      download(pdfBytes, fileName, "application/pdf");
     } catch (e) {
       onFileErrorHandler(e);
     }
@@ -219,184 +209,52 @@ const App = () => {
     return quantity;
   };
 
-  const isExtraDeckCard = (card) => {
-    if (
-      card.type.includes("Synchro") ||
-      card.type.includes("Fusion") ||
-      card.type.includes("XYZ") ||
-      card.type.includes("Link")
-    ) {
-      return true;
-    }
-    return false;
-  };
-
   const [, mainDrop] = useDrop(() => ({
-    accept: "image",
-    drop: (item) => addToMainDeck(item),
+    accept: FILE_TYPE.IMAGE,
+    drop: (item) => addToDeck(item, deckType.MAIN),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
   const [, extraDrop] = useDrop(() => ({
-    accept: "image",
-    drop: (item) => addToExtraDeck(item),
+    accept: FILE_TYPE.IMAGE,
+    drop: (item) => addToDeck(item, deckType.EXTRA),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
   const [, sideDrop] = useDrop(() => ({
-    accept: "image",
-    drop: (item) => addToSideDeck(item),
+    accept: FILE_TYPE.IMAGE,
+    drop: (item) => addToDeck(item, deckType.SIDE),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
     }),
   }));
 
-  const getNumberOfCopies = (cards, draggedCard) => {
-    const indexMain = cards.main.findIndex(
-      (card) => card.id === draggedCard.id
-    );
-    const indexSide = cards.side.findIndex(
-      (card) => card.id === draggedCard.id
-    );
-    const indexExtra = cards.extra.findIndex(
-      (card) => card.id === draggedCard.id
-    );
-    let quantity = 0;
-    if (indexMain !== -1) {
-      quantity =
-        quantity +
-        (cards.main[indexMain]?.quantity ? cards.main[indexMain].quantity : 0);
-    }
-    if (indexSide !== -1) {
-      quantity = quantity + cards.side[indexSide].quantity;
-    }
-    if (indexExtra !== -1) {
-      quantity = quantity + cards.extra[indexExtra].quantity;
-    }
-    return quantity;
-  };
+  const addToDeck = (draggedCard, deckType) => {
+    if (!isCardValidForDeck(draggedCard, deckType)) return;
 
-  const addToMainDeck = (draggedCard) => {
-    if (isExtraDeckCard(draggedCard)) {
-      return;
-    }
-    let maxQuantity = 3;
-    switch (draggedCard?.banlist_info?.ban_tcg) {
-      case "Banned":
-        return;
-      case "Limited":
-        maxQuantity = 1;
-        break;
-      case "Semi-Limited":
-        maxQuantity = 2;
-        break;
-      default:
-        maxQuantity = 3;
-        break;
-    }
-    setCards((cards) => {
-      const cardsAux = JSON.parse(JSON.stringify(cards));
-      if (getQuantity(cardsAux.main) >= 60) {
-        return cardsAux;
-      }
-      if (maxQuantity <= getNumberOfCopies(cards, draggedCard)) {
-        return cardsAux;
-      }
-      const index = cardsAux.main.findIndex(
-        (card) => card.id === draggedCard.id
-      );
-      if (index !== -1) {
-        if (cardsAux.main[index]?.quantity === maxQuantity) {
-          return cardsAux;
-        }
-        cardsAux.main[index].quantity = cardsAux.main[index].quantity + 1;
-      } else {
-        cardsAux.main.push({ ...draggedCard, quantity: 1 });
-      }
-      return cardsAux;
-    });
-  };
+    const maxQuantity = getCardMaxQuantity(draggedCard);
+    if (maxQuantity === 0) return;
 
-  const addToExtraDeck = (draggedCard) => {
-    if (!isExtraDeckCard(draggedCard)) {
-      return;
-    }
-    let maxQuantity = 3;
-    switch (draggedCard?.banlist_info?.ban_tcg) {
-      case "Banned":
-        return;
-      case "Limited":
-        maxQuantity = 1;
-        break;
-      case "Semi-Limited":
-        maxQuantity = 2;
-        break;
-      default:
-        maxQuantity = 3;
-        break;
-    }
-    setCards((cards) => {
-      const cardsAux = JSON.parse(JSON.stringify(cards));
-      if (getQuantity(cardsAux.extra) >= 15) {
-        return cardsAux;
-      }
-      if (maxQuantity <= getNumberOfCopies(cards, draggedCard)) {
-        return cardsAux;
-      }
-      const index = cardsAux.extra.findIndex(
-        (card) => card.id === draggedCard.id
-      );
-      if (index !== -1) {
-        if (cardsAux.extra[index]?.quantity === maxQuantity) {
-          return cardsAux;
-        }
-        cardsAux.extra[index].quantity = cardsAux.extra[index].quantity + 1;
-      } else {
-        cardsAux.extra.push({ ...draggedCard, quantity: 1 });
-      }
-      return cardsAux;
-    });
-  };
+    const maxDeckSize = getDeckMaxSize(deckType);
 
-  const addToSideDeck = (draggedCard) => {
-    let maxQuantity = 3;
-    switch (draggedCard?.banlist_info?.ban_tcg) {
-      case "Banned":
-        return;
-      case "Limited":
-        maxQuantity = 1;
-        break;
-      case "Semi-Limited":
-        maxQuantity = 2;
-        break;
-      default:
-        maxQuantity = 3;
-        break;
-    }
     setCards((cards) => {
-      const cardsAux = JSON.parse(JSON.stringify(cards));
-      if (getQuantity(cardsAux.side) >= 15) {
-        return cardsAux;
-      }
-      if (maxQuantity <= getNumberOfCopies(cards, draggedCard)) {
-        return cardsAux;
-      }
-      const index = cardsAux.side.findIndex(
-        (card) => card.id === draggedCard.id
+      const updatedCards = JSON.parse(JSON.stringify(cards));
+
+      if (getQuantity(updatedCards[deckType]) >= maxDeckSize)
+        return updatedCards;
+      if (getNumberOfCopies(cards, draggedCard) >= maxQuantity)
+        return updatedCards;
+
+      return addOrUpdateCardInDeck(
+        updatedCards,
+        draggedCard,
+        deckType,
+        maxQuantity
       );
-      if (index !== -1) {
-        if (cardsAux.side[index]?.quantity === maxQuantity) {
-          return cardsAux;
-        }
-        cardsAux.side[index].quantity = cardsAux.side[index].quantity + 1;
-      } else {
-        cardsAux.side.push({ ...draggedCard, quantity: 1 });
-      }
-      return cardsAux;
     });
   };
 
@@ -416,7 +274,7 @@ const App = () => {
       const cardsAux = JSON.parse(JSON.stringify(cards));
       let index;
       switch (type) {
-        case "Deck":
+        case deckType.MAIN:
           index = cardsAux.main.findIndex((card) => card.id === draggedCard.id);
           if (index !== -1) {
             if (cardsAux.main[index].quantity === 1) {
@@ -428,7 +286,7 @@ const App = () => {
             }
           }
           break;
-        case "Extra":
+        case deckType.EXTRA:
           index = cardsAux.extra.findIndex(
             (card) => card.id === draggedCard.id
           );
@@ -443,7 +301,7 @@ const App = () => {
             }
           }
           break;
-        case "Side":
+        case deckType.SIDE:
           index = cardsAux.side.findIndex((card) => card.id === draggedCard.id);
           if (index !== -1) {
             if (cardsAux.side[index].quantity === 1) {
@@ -479,6 +337,8 @@ const App = () => {
       reader.readAsText(file, "UTF-8");
       reader.onload = onFileLoaded;
       reader.onerror = onFileErrorHandler;
+
+      e.target.value = null;
     } else {
       alert("This functionality only works with YDK files");
     }
@@ -560,15 +420,15 @@ const App = () => {
   const resetDecklist = (type) => {
     const cardsAux = JSON.parse(JSON.stringify(cards));
     switch (type) {
-      case "deck":
+      case deckType.MAIN:
         cardsAux.main = [];
         setCards(cardsAux);
         break;
-      case "side":
+      case deckType.SIDE:
         cardsAux.side = [];
         setCards(cardsAux);
         break;
-      case "extra":
+      case deckType.EXTRA:
         cardsAux.extra = [];
         setCards(cardsAux);
         break;

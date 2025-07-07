@@ -1,12 +1,13 @@
-import DeckForm from './DeckForm'
-import CardHolder from './CardHolder'
+import DeckForm from "./DeckForm";
+import CardHolder from "./CardHolder";
 import {
   DeckListStyles,
   MainDeckStyles,
   ExtraDeckStyles,
-  SideDeckStyles
-} from './styles.css'
-import PropTypes from 'prop-types'
+  SideDeckStyles,
+} from "./styles.css";
+import PropTypes from "prop-types";
+import { deckType } from "../../constants/card";
 
 const DeckList = ({
   mainCards = [],
@@ -23,14 +24,18 @@ const DeckList = ({
   onFormChange = () => {},
   onDownload = () => {},
   onUpload = () => {},
-  onTitleButtonClick = () => {}
+  onTitleButtonClick = () => {},
 }) => {
   return (
     <div css={DeckListStyles}>
-      <DeckForm onFormChange={onFormChange} onDownload={onDownload} onUpload={onUpload} />
+      <DeckForm
+        onFormChange={onFormChange}
+        onDownload={onDownload}
+        onUpload={onUpload}
+      />
       <CardHolder
         styleCss={MainDeckStyles}
-        title="Deck"
+        title={deckType.MAIN}
         cards={mainCards}
         length={mainLength}
         drop={mainDrop}
@@ -40,7 +45,7 @@ const DeckList = ({
       />
       <CardHolder
         styleCss={ExtraDeckStyles}
-        title="Extra"
+        title={deckType.EXTRA}
         cards={extraCards}
         length={extraLength}
         drop={extraDrop}
@@ -50,7 +55,7 @@ const DeckList = ({
       />
       <CardHolder
         styleCss={SideDeckStyles}
-        title="Side"
+        title={deckType.SIDE}
         cards={sideCards}
         length={sideLength}
         drop={sideDrop}
@@ -59,8 +64,8 @@ const DeckList = ({
         onTitleButtonClick={onTitleButtonClick}
       />
     </div>
-  )
-}
+  );
+};
 
 DeckList.propTypes = {
   mainCards: PropTypes.arrayOf(Object),
@@ -77,7 +82,7 @@ DeckList.propTypes = {
   onFormChange: PropTypes.func,
   onDownload: PropTypes.func,
   onUpload: PropTypes.func,
-  onTitleButtonClick: PropTypes.func
-}
+  onTitleButtonClick: PropTypes.func,
+};
 
-export default DeckList
+export default DeckList;

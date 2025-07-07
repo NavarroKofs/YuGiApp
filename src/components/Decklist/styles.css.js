@@ -1,7 +1,7 @@
-import { css } from '@emotion/react'
+import { css } from "@emotion/react";
 
 export const DeckListStyles = css`
-  background-color: rgba(0,0,0,.5);
+  background-color: rgba(0, 0, 0, 0.5);
   width: 50vw;
   height: 98vh;
   overflow-y: auto;
@@ -11,7 +11,7 @@ export const DeckListStyles = css`
   @media (orientation: portrait) {
     width: 65vw;
   }
-  
+
   .card-holder-title {
     color: #fefefe;
     height: 5vh;
@@ -35,7 +35,7 @@ export const DeckListStyles = css`
       height: 60%;
       border: 1px solid #000;
       border-radius: 5px;
-      background-color: rgb(254,219,65);
+      background-color: rgb(254, 219, 65);
       font-size: 1rem;
       color: black;
       margin: 0 1vw;
@@ -50,7 +50,7 @@ export const DeckListStyles = css`
       }
 
       :hover {
-        box-shadow: 0px 0px 19px rgb(0,172,234);
+        box-shadow: 0px 0px 19px rgb(0, 172, 234);
       }
     }
   }
@@ -61,11 +61,11 @@ export const DeckListStyles = css`
     width: 95%;
     margin: 0 auto;
     height: calc(95% - 5vh);
-    padding: .5vh 0;
+    padding: 0.5vh 0;
     .card-holder-cards {
       width: 95%;
       display: grid;
-      gap: .5vw;
+      gap: 0.5vw;
       align-items: start;
       flex-wrap: wrap;
       @media (orientation: portrait) {
@@ -73,7 +73,7 @@ export const DeckListStyles = css`
       }
     }
 
-    .deck {
+    .main {
       grid-template-columns: repeat(10, 1fr);
       grid-template-rows: repeat(4, 24%);
 
@@ -109,7 +109,7 @@ export const DeckListStyles = css`
       }
     }
   }
-`
+`;
 
 export const DeckFormStyles = css`
   width: 100%;
@@ -125,7 +125,7 @@ export const DeckFormStyles = css`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 45%);
-    gap: .5vw;
+    gap: 0.5vw;
     @media (max-height: 700px) {
       width: 100%;
       gap: 0;
@@ -155,15 +155,15 @@ export const DeckFormStyles = css`
     }
 
     .image-upload img {
-        height: 100%;
-        cursor: pointer;
+      height: 100%;
+      cursor: pointer;
     }
   }
 
   input {
     width: 90%;
     height: 80%;
-    display:inline-block;
+    display: inline-block;
     padding: 0.2vh 0.5vw;
     line-height: 100%;
     outline: none;
@@ -177,29 +177,28 @@ export const DeckFormStyles = css`
     }
   }
 
-  input[type="date"]:not(.has-value):before{
+  input[type="date"]:not(.has-value):before {
     content: attr(placeholder);
   }
-
-`
+`;
 
 export const MainDeckStyles = css`
   width: 100%;
   height: 59%;
   border: 1px solid #000;
-`
+`;
 
 export const ExtraDeckStyles = css`
   width: calc(100%-2px);
   height: 15%;
   border: 1px solid #000;
-`
+`;
 
 export const SideDeckStyles = css`
   width: calc(100%-2px);
   height: 15%;
   border: 1px solid #000;
-`
+`;
 
 export const CardStyles = css`
   width: 100%;
@@ -209,4 +208,4 @@ export const CardStyles = css`
     height: 100%;
     object-fit: fill;
   }
-`
+`;

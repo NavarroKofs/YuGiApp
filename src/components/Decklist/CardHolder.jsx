@@ -1,20 +1,22 @@
-import PropTypes from 'prop-types'
-import Card from './Card'
+import PropTypes from "prop-types";
+import Card from "./Card";
+import { deckType } from "../../constants/card";
+
 const CardHolder = ({
   styleCss,
-  title = '',
+  title = "",
   cards = [],
   drop = () => {},
   length = 0,
   onMouseEnterHandler = () => {},
   onRightClick = () => {},
-  onTitleButtonClick = () => {}
+  onTitleButtonClick = () => {},
 }) => {
   const multiplyCardsByQuantity = () => {
-    const cardsAux = []
+    const cardsAux = [];
 
     for (let i = 0; i < cards.length; i++) {
-      cards[i].quantity = cards[i]?.quantity ? cards[i].quantity : 1
+      cards[i].quantity = cards[i]?.quantity ? cards[i].quantity : 1;
       for (let j = 0; j < cards[i].quantity; j++) {
         cardsAux.push(
           <Card
@@ -24,11 +26,18 @@ const CardHolder = ({
             onRightClick={onRightClick}
             type={title}
           />
-        )
+        );
       }
     }
-    return cardsAux
-  }
+    return cardsAux;
+  };
+
+  const isSideOrExtraDeck = () => {
+    return (
+      title.toLocaleLowerCase() === deckType.SIDE ||
+      title.toLocaleLowerCase() === deckType.EXTRA
+    );
+  };
 
   return (
     <div css={styleCss} ref={drop}>
@@ -43,17 +52,23 @@ const CardHolder = ({
       <div className="card-holder-content">
         <div
           className={`card-holder-cards ${
-            (title.toLocaleLowerCase() === 'side' || title.toLocaleLowerCase() === 'extra') && length <= 10
-              ? 'miniExtra'
-              : title.toLocaleLowerCase() === 'side' || title.toLocaleLowerCase() === 'extra' ? 'extra' : title.toLocaleLowerCase()
-          } ${length > 40 && title.toLocaleLowerCase() === 'deck' ? 'miniDeck' : ''}`}
+            isSideOrExtraDeck() && length <= 10
+              ? "miniExtra"
+              : isSideOrExtraDeck()
+              ? "extra"
+              : title.toLocaleLowerCase()
+          } ${
+            length > 40 && title.toLocaleLowerCase() === deckType.MAIN
+              ? "miniDeck"
+              : ""
+          }`}
         >
           {multiplyCardsByQuantity()}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 CardHolder.propTypes = {
   styleCss: PropTypes.object,
@@ -63,7 +78,7 @@ CardHolder.propTypes = {
   length: PropTypes.number,
   onMouseEnterHandler: PropTypes.func,
   onRightClick: PropTypes.func,
-  onTitleButtonClick: PropTypes.func
-}
+  onTitleButtonClick: PropTypes.func,
+};
 
-export default CardHolder
+export default CardHolder;
