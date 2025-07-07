@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { CardItemStyles } from "./styles.css";
 import { useDrag } from "react-dnd";
 import backCard from "../../assets/back_card.jpg";
+import { ACCEPTED_ELEMENT } from "../../constants/dragndrop";
 const defaultImgUrl = backCard;
 
 const CardItem = ({ card, onMouseEnterHandler = () => {} }) => {
@@ -9,7 +10,7 @@ const CardItem = ({ card, onMouseEnterHandler = () => {} }) => {
     return card?.card_images?.length > 0;
   };
   const [, drag] = useDrag(() => ({
-    type: "image",
+    type: ACCEPTED_ELEMENT,
     item: card,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),

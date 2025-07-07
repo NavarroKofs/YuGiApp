@@ -14,7 +14,7 @@ import { useFormik } from "formik";
 import { formSchema } from "./components/Decklist/FormValidation";
 import { decklistFormFields, COUNT, FILE_SUFFIX } from "./constants/decklist";
 import { cardType, deckType } from "./constants/card";
-import { FILE_TYPE } from "./constants/file";
+import { ACCEPTED_ELEMENT } from "./constants/dragndrop";
 import {
   isCardValidForDeck,
   getCardMaxQuantity,
@@ -210,7 +210,7 @@ const App = () => {
   };
 
   const [, mainDrop] = useDrop(() => ({
-    accept: FILE_TYPE.IMAGE,
+    accept: ACCEPTED_ELEMENT,
     drop: (item) => addToDeck(item, deckType.MAIN),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -218,7 +218,7 @@ const App = () => {
   }));
 
   const [, extraDrop] = useDrop(() => ({
-    accept: FILE_TYPE.IMAGE,
+    accept: ACCEPTED_ELEMENT,
     drop: (item) => addToDeck(item, deckType.EXTRA),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -226,7 +226,7 @@ const App = () => {
   }));
 
   const [, sideDrop] = useDrop(() => ({
-    accept: FILE_TYPE.IMAGE,
+    accept: ACCEPTED_ELEMENT,
     drop: (item) => addToDeck(item, deckType.SIDE),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
