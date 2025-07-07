@@ -1,18 +1,18 @@
-import { css } from '@emotion/react'
-import magnifierIcon from '../../assets/magnifier-icon.svg'
+import { css } from "@emotion/react";
+import magnifierIcon from "../../assets/magnifier-icon.svg";
 
 export const CardSearcherStyle = css`
   width: 20vw;
   height: 5%;
   height: 98vh;
   border: 1px solid #000;
-  background-color: rgba(0,0,0,.5);
+  background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0px 0px 19px #009fda;
   backdrop-filter: blur(4px);
   @media (orientation: portrait) {
     width: 30vw;
   }
-`
+`;
 
 export const SearchBarStyle = css`
   width: 100%;
@@ -38,8 +38,8 @@ export const SearchBarStyle = css`
       width: 100%;
       margin: 0;
       background-image: none;
-      padding-left: .2vw;
-      padding-right: .2vw;
+      padding-left: 0.2vw;
+      padding-right: 0.2vw;
       border: none;
       border-radius: 0px;
     }
@@ -48,22 +48,26 @@ export const SearchBarStyle = css`
       width: 100%;
       margin: 0;
       background-image: none;
-      padding-left: .2vw;
-      padding-right: .2vw;
+      padding-left: 0.2vw;
+      padding-right: 0.2vw;
       border: none;
       border-radius: 0px;
     }
   }
-`
+`;
 
 export const CardItemStyles = css`
   display: grid;
   grid-template-columns: 2fr 6fr;
   width: 98%;
   height: 10vh;
-  grid-gap: .2vw;
+  grid-gap: 0.2vw;
   border: 1px solid #000;
   color: #fefefe;
+  user-select: none; /* Standard */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
 
   @media (orientation: portrait) {
     height: 5vh;
@@ -71,7 +75,8 @@ export const CardItemStyles = css`
   }
 
   .card-picture {
-    margin-right: .2vw;
+    cursor: grab;
+    margin-right: 0.2vw;
     height: 10vh;
     @media (orientation: portrait) {
       height: 5vh;
@@ -80,11 +85,14 @@ export const CardItemStyles = css`
       height: 100%;
       width: 100%;
     }
+    :active {
+      cursor: grabbing;
+    }
   }
 
   .card-info {
     font-size: 1vw;
-    line-height: .5vh;
+    line-height: 0.5vh;
     display: grid;
     grid-auto-rows: 1fr;
     grid-gap: 1px;
@@ -102,14 +110,14 @@ export const CardItemStyles = css`
       text-overflow: ellipsis;
     }
   }
-`
+`;
 export const SearchResultsStyles = css`
   height: 95%;
   overflow-y: auto;
   h5 {
     margin: 1vh;
     font-size: 1vw;
-    color: #fefefe
+    color: #fefefe;
   }
   ::-webkit-scrollbar {
     width: 12px;
@@ -118,7 +126,7 @@ export const SearchResultsStyles = css`
   ::-webkit-scrollbar:window-inactive {
     display: none;
   }
-  ::-webkit-scrollbar:corner-present  {
+  ::-webkit-scrollbar:corner-present {
   }
   ::-webkit-scrollbar-track-piece {
     border-radius: 2px;
@@ -133,35 +141,41 @@ export const SearchResultsStyles = css`
     border: solid 4px transparent;
   }
   section::-webkit-scrollbar-button:vertical:start:decrement {
-    background: transparent url(https://elcssar.com/ejemplos/arrow_up.png) no-repeat center center;
+    background: transparent url(https://elcssar.com/ejemplos/arrow_up.png)
+      no-repeat center center;
   }
   section::-webkit-scrollbar-button:vertical:end:decrement {
-    background: transparent url(https://elcssar.com/ejemplos/arrow_up.png) no-repeat center center;
+    background: transparent url(https://elcssar.com/ejemplos/arrow_up.png)
+      no-repeat center center;
   }
   section::-webkit-scrollbar-button:vertical:end:increment {
-    background: transparent url(https://elcssar.com/ejemplos/arrow_down.png) no-repeat center center;
+    background: transparent url(https://elcssar.com/ejemplos/arrow_down.png)
+      no-repeat center center;
   }
   section::-webkit-scrollbar-button:horizontal:decrement {
-    background: transparent url(https://elcssar.com/ejemplos/arrow_left.png) no-repeat center center;
+    background: transparent url(https://elcssar.com/ejemplos/arrow_left.png)
+      no-repeat center center;
   }
   ::-webkit-scrollbar-button:horizontal:increment {
-    background: transparent url(https://elcssar.com/ejemplos/arrow_right.png) no-repeat center center;
+    background: transparent url(https://elcssar.com/ejemplos/arrow_right.png)
+      no-repeat center center;
   }
 
-  ::-webkit-scrollbar-thumb  {
+  ::-webkit-scrollbar-thumb {
     height: 10px;
     width: 4px;
-    background-color: #09C;
+    background-color: #09c;
     border-radius: 6px;
-    box-shadow: 0 3px 6px -2px rgba(51,0,51,0.5);
+    box-shadow: 0 3px 6px -2px rgba(51, 0, 51, 0.5);
   }
   ::-webkit-scrollbar-corner {
-    background: transparent ;
+    background: transparent;
   }
   ::-webkit-resizer {
-    background: transparent url(https://elcssar.com/ejemplos/expandIcon.png) no-repeat -1px -1px;
+    background: transparent url(https://elcssar.com/ejemplos/expandIcon.png)
+      no-repeat -1px -1px;
   }
   ::-webkit-scrollbar-track-piece:no-button {
     background-color: red;
   }
-`
+`;

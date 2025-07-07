@@ -1,20 +1,20 @@
-import PropTypes from 'prop-types'
-import { CardItemStyles } from './styles.css'
-import { useDrag } from 'react-dnd'
-import backCard from '../../assets/back_card.jpg'
-const defaultImgUrl = backCard
+import PropTypes from "prop-types";
+import { CardItemStyles } from "./styles.css";
+import { useDrag } from "react-dnd";
+import backCard from "../../assets/back_card.jpg";
+const defaultImgUrl = backCard;
 
 const CardItem = ({ card, onMouseEnterHandler = () => {} }) => {
   const hasImage = () => {
-    return card?.card_images?.length > 0
-  }
+    return card?.card_images?.length > 0;
+  };
   const [, drag] = useDrag(() => ({
-    type: 'image',
+    type: "image",
     item: card,
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging()
-    })
-  }))
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
   return (
     <div
       className="card-item-container"
@@ -22,7 +22,10 @@ const CardItem = ({ card, onMouseEnterHandler = () => {} }) => {
       onMouseEnter={() => onMouseEnterHandler(card)}
     >
       <picture className="card-picture">
-        <img ref={drag} src={hasImage() ? card.card_images[0].image_url_small : defaultImgUrl} />
+        <img
+          ref={drag}
+          src={hasImage() ? card.card_images[0].image_url_small : defaultImgUrl}
+        />
       </picture>
       <div className="card-info">
         <p className="card-name">
@@ -36,19 +39,19 @@ const CardItem = ({ card, onMouseEnterHandler = () => {} }) => {
             : card?.type}
         </p>
         <p className="card-atk-def">
-          {card?.level ? `${card.atk}/${card.def} ⭐${card?.level}` : ''}
+          {card?.level ? `${card.atk}/${card.def} ⭐${card?.level}` : ""}
         </p>
         <p className="card-atk-def">
-          {card?.linkval ? `ATK: ${card.atk} Link: ${card?.linkval}` : ''}
+          {card?.linkval ? `ATK: ${card.atk} Link: ${card?.linkval}` : ""}
         </p>
       </div>
     </div>
-  )
-}
+  );
+};
 
 CardItem.propTypes = {
   card: PropTypes.object,
-  onMouseEnterHandler: PropTypes.func
-}
+  onMouseEnterHandler: PropTypes.func,
+};
 
-export default CardItem
+export default CardItem;
